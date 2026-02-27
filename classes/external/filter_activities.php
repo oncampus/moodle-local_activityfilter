@@ -17,6 +17,7 @@
 namespace local_activityfilter\external;
 
 use core\di;
+use context_system;
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
@@ -39,6 +40,7 @@ class filter_activities extends external_api {
 
     public static function execute(string $prompt): array {
         $params = self::validate_parameters(self::execute_parameters(), ['prompt' => $prompt]);
+        self::validate_context(context_system::instance());
         $activitysearcher = di::get(i_activity_searcher::class);
         return $activitysearcher->filter_activities($params['prompt']);
     }

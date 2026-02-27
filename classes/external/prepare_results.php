@@ -16,6 +16,7 @@
 
 namespace local_activityfilter\external;
 
+use context_system;
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
@@ -40,6 +41,7 @@ class prepare_results extends external_api {
         global $OUTPUT;
 
         $params = self::validate_parameters(self::execute_parameters(), ['items' => $items]);
+        self::validate_context(context_system::instance());
 
         $ratinglist = new activity_rating_list($params['items']);
         return ['html' => $OUTPUT->render($ratinglist)];
