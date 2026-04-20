@@ -15,6 +15,14 @@ You should have received a copy of the GNU General Public License
 along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+.accordion-button.open-rating::after {
+    margin-left: 1rem;
+}
+
+.align-to-right {
+    margin-left: auto;
+}
+
 .btn-link.open-rating {
     display: flex;
     align-items: center;
@@ -24,8 +32,7 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }
 
 .prompt-search {
-    border-style: none;
-    outline-style: none;
+    border-style: none !important;
     resize: none;
 }
 

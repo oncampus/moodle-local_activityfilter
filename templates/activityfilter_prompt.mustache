@@ -35,13 +35,23 @@
 
 <form id="ai_activity_filter_prompt_form">
     <div class="card prompt-card">
-        <div class="card-body">
-            <textarea class="prompt-search w-100" id="activitysearchprompt"
-                      placeholder="{{#str}}promptdesc, local_activityfilter{{/str}}" rows="1"></textarea>
+        <div class="card-body d-flex gap-2 align-items-center">
+            <label for="activitysearchprompt" class="form-label mb-0 visually-hidden">
+                {{#str}}promptdesc, local_activityfilter{{/str}}
+            </label>
+            <textarea class="prompt-search form-control"
+                      id="activitysearchprompt"
+                      placeholder="{{#str}}promptdesc, local_activityfilter{{/str}}"
+                      rows="1"></textarea>
+
+            <button class="btn btn-primary prompt-search-btn d-flex align-items-center gap-2"
+                    type="button"
+                    data-action="activityfilter-search">
+                {{#pix}}a/search, core, {{#str}}search, local_activityfilter{{/str}}{{/pix}}
+                <span class="spinner-border spinner-border-sm d-none"
+                      role="status"
+                      aria-hidden="true"></span>
+            </button>
         </div>
-        <button class="btn btn-primary prompt-search-btn" type="button" data-action="activityfilter-search">
-            <span class="label">{{#pix}}a/search, core, {{#str}}search, local_activityfilter{{/str}}{{/pix}}</span>
-            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-        </button>
     </div>
 </form>

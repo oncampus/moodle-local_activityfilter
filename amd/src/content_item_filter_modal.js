@@ -73,8 +73,8 @@ async function search(modalRoot) {
  * @param {boolean} loading Set to loading / ready
  */
 function setLoading(button, loading) {
-    const label = button.querySelector('.label');
-    const spinner = button.querySelector('.spinner-border');
+    const label = button.querySelector(Selectors.SearchIcon);
+    const spinner = button.querySelector(Selectors.LoadingSpinner);
 
     button.disabled = loading;
     button.classList.toggle('disabled', loading);
@@ -132,7 +132,7 @@ export async function init() {
 
     newContentDropdowns.forEach(newContentDropdown => {
         const icon = document.createElement('i');
-        icon.classList.add('icon', 'fa', 'fa-search');
+        icon.classList.add('icon', 'fa-solid', 'fa-search');
 
         const text = document.createTextNode(openButtonText);
 

@@ -40,11 +40,11 @@
         "activityicon": "HTML_PLUGIN_ICON",
         "pluginname": "Big Blue Button",
         "stars": [
-            "fa-star",
-            "fa-star",
-            "fa-star-half-full",
-            "fa-star-o",
-            "fa-star-o"
+            "fa-solid fa-star",
+            "fa-solid fa-star",
+            "fa-solid fa-star-half-full",
+            "fa-regular fa-star",
+            "fa-regular fa-star"
         ],
         "occurrences": "often",
         "reason": "Can help to connect better to students",
@@ -52,27 +52,31 @@
     }
 }}
 
-<article class="card activity-rating-item">
-    <div class="card-header" id="activity-rating-heading-{{id}}">
-        <h5 class="mb-0">
-            <button class="btn btn-link collapsed open-rating" data-toggle="collapse"
-                    data-target="#activity-rating-collapse-{{id}}" aria-expanded="false"
-                    aria-controls="activity-rating-collapse-{{id}}">
-                <span>
-                    {{{activityicon}}}
-                    {{pluginname}}
-                </span>
-                <span>
-                    {{#stars}}
-                        <i class="fa {{.}}"></i>
-                    {{/stars}}
-                </span>
-            </button>
-        </h5>
-    </div>
-    <div id="activity-rating-collapse-{{id}}" class="collapse" aria-labelledby="activity-rating-heading-{{id}}"
-         data-parent="#activity-rating">
-        <div class="card-body">
+<article class="accordion-item activity-rating-item">
+    <h2 class="accordion-header" id="activity-rating-heading-{{id}}">
+        <button class="accordion-button collapsed open-rating" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#activity-rating-collapse-{{id}}"
+                aria-expanded="false"
+                aria-controls="activity-rating-collapse-{{id}}">
+            <span>
+                {{{activityicon}}}
+                {{pluginname}}
+            </span>
+
+            <span class="align-to-right">
+                {{#stars}}
+                    <i class="{{.}}"></i>
+                {{/stars}}
+            </span>
+        </button>
+    </h2>
+
+    <div id="activity-rating-collapse-{{id}}"
+         class="accordion-collapse collapse"
+         aria-labelledby="activity-rating-heading-{{id}}"
+         data-bs-parent="#activity-rating">
+        <div class="accordion-body">
             <p><strong>{{#str}}popularitycolumn, local_activityfilter{{/str}}. </strong> {{occurrences}}</p>
             <p><strong>{{#str}}reasoncolumn, local_activityfilter{{/str}}.</strong> {{reason}}</p>
             <p><strong>{{#str}}hintcolumn, local_activityfilter{{/str}}.</strong> {{hint}}</p>

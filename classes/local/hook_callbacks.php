@@ -17,6 +17,7 @@
 namespace local_activityfilter\local;
 
 use context_system;
+use core\di;
 use core\hook\output\before_html_attributes;
 use core\hook\di_configuration;
 use core_ai\aiactions\generate_text;
@@ -67,6 +68,7 @@ class hook_callbacks {
             id: i_activity_searcher::class,
             definition: function (
                 i_activity_summarizer $summerizer,
+                manager $aimanager,
             ): i_activity_searcher {
                 if (get_config('local_activityfilter', 'dummy_mode')) {
                     return new ai_dummy_searcher();
@@ -74,7 +76,8 @@ class hook_callbacks {
 
                 return new ai_searcher(
                     $summerizer,
-                    new stopword_remover()
+                    new stopword_remover(),
+                    $aimanager
                 );
             }
         );
@@ -88,7 +91,7 @@ class hook_callbacks {
      */
     public static function before_html_attributes(before_html_attributes $hook): void {
         if (
-            !manager::is_action_available(generate_text::class)
+            !di::get(manager::class)->is_action_available(generate_text::class)
             && !get_config('local_activityfilter', 'dummy_mode')
         ) {
             return;

@@ -31,23 +31,21 @@ use local_activityfilter\activity_searcher\contracts\i_activity_searcher;
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ai_searcher implements i_activity_searcher {
-    /** @var i_activity_summarizer Activity summarizer */
-    private readonly i_activity_summarizer $summerizer;
-    /** @var i_text_compressor Text compressor */
-    private readonly i_text_compressor $compressor;
-
     /**
      * Constructor.
      *
      * @param i_activity_summarizer $summerizer Activity summarizer
      * @param i_text_compressor $compressor Text compressor
+     * @param manager $aimanager AI Manager
      */
     public function __construct(
-        i_activity_summarizer $summerizer,
-        i_text_compressor $compressor,
+        /** @var i_activity_summarizer Activity summarizer */
+        private readonly i_activity_summarizer $summerizer,
+        /** @var i_text_compressor Text compressor */
+        private readonly i_text_compressor $compressor,
+        /** @var manager AI Manager */
+        private readonly manager $aimanager,
     ) {
-        $this->summerizer = $summerizer;
-        $this->compressor = $compressor;
     }
 
     /**
@@ -114,7 +112,7 @@ class ai_searcher implements i_activity_searcher {
      * @throws Exception
      */
     public function send_request(generate_text $prompts): string {
-        $response = (new manager())->process_action($prompts);
+        $response = $this->aimanager->process_action($prompts);
         if (!$response->get_success()) {
             throw new Exception($response->get_errormessage());
         }

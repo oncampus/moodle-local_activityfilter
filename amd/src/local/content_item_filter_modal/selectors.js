@@ -17,7 +17,9 @@ const Selectors = {
     searchButton: '[data-action="activityfilter-search"]',
     resultArea: '[data-region="activityfilter-results"]',
     searchPrompt: '#activitysearchprompt',
-    newContentDropdown: ".course-content .course-section .divider .dropdown-menu"
+    newContentDropdown: ".course-content .course-section .divider .dropdown-menu",
+    SearchIcon: '.icon',
+    LoadingSpinner: '.spinner-border',
 };
 
 export default Selectors;

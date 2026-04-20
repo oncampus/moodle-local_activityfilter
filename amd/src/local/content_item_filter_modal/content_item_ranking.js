@@ -110,16 +110,16 @@ export default class ContentItemRanking {
         let stars = Math.floor(ranking / 2);
 
         for (let i = 0; i < stars; i++) {
-            staricons.push('fa-star');
+            staricons.push('fa-solid fa-star');
         }
 
         if (ranking % 2 === 1) {
-            staricons.push('fa-star-half-full');
+            staricons.push('fa-solid fa-star-half-stroke');
             stars++;
         }
 
         while (stars < 5) {
-            staricons.push('fa-star-o');
+            staricons.push('fa-regular fa-star');
             stars++;
         }
 
