@@ -31,8 +31,11 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
     justify-content: space-between;
 }
 
+#activitysearchprompt {
+    border-style: none;
+}
+
 .prompt-search {
-    border-style: none !important;
     resize: none;
 }
 
