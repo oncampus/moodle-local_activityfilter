@@ -19,24 +19,30 @@ namespace local_activityfilter\activity_searcher;
 use local_activityfilter\activity_searcher\contracts\content_item_info;
 
 /**
- * Summarizes Infos about the Mod Plugins
+ * Summarizes Infos about content items
  *
  * @author Konrad Ebel <konrad.ebel@oncampus.de>
  * @copyright 2025, oncampus GmbH
  * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 interface i_content_item_summarizer {
+    /**
+     * Summarizes infos about a single content item
+     *
+     * @param string $pluginname Plugin name to search by
+     * @return content_item_info|false Content item description, False if not found
+     */
     public function get_content_item_info(string $pluginname): content_item_info|false;
 
     /**
-     * Summarizes infos about all active activities in moodle
+     * Summarizes infos about all active content items in moodle
      *
-     * @return content_item_info[] List of activity data
+     * @return content_item_info[] List of content item descriptions
      */
     public function get_content_item_infos(): array;
 
     /**
-     * Gets all activities from moodle
+     * Gets all content items from moodle (as StdClass)
      *
      * @return array|null List of mods in moodle
      */

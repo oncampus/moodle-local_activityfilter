@@ -21,6 +21,10 @@ use Exception;
 
 /**
  * AI Backend for activity_searcher plugin
+ *
+ * @author Konrad Ebel <konrad.ebel@oncampus.de>
+ * @copyright 2026, oncampus GmbH
+ * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 interface ai_backend {
     /**

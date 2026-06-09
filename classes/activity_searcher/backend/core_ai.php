@@ -22,6 +22,10 @@ use Exception;
 
 /**
  * Moodle core AI subsystem
+ *
+ * @author Konrad Ebel <konrad.ebel@oncampus.de>
+ * @copyright 2026, oncampus GmbH
+ * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class core_ai implements ai_backend {
     /**
@@ -30,10 +34,16 @@ class core_ai implements ai_backend {
      * @param manager $manager Moodle AI subsystem manager
      */
     public function __construct(
+        /** @var manager $manager Moodle AI subsystem manager */
         private manager $manager,
     ) {
     }
 
+    /**
+     * Whether generate_text action is available
+     *
+     * @return bool True if available
+     */
     public function available(): bool {
         return $this->manager->is_action_available(generate_text::class);
     }

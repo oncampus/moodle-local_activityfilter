@@ -41,9 +41,9 @@ class ai_searcher implements i_activity_searcher {
         /** @var i_content_item_summarizer Activity summarizer */
         private readonly i_content_item_summarizer $summerizer,
         /** @var i_text_compressor Text compressor */
-        private readonly i_text_compressor         $compressor,
+        private readonly i_text_compressor $compressor,
         /** @var ai_backend AI Manager */
-        private readonly ai_backend                $aimanager,
+        private readonly ai_backend $aimanager,
     ) {
     }
 

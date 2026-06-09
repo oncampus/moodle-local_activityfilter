@@ -31,14 +31,16 @@ use RuntimeException;
  * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class content_item_summerizer implements i_content_item_summarizer {
+    /** @var array|null $contentiteminfocache Cached content item infos */
     private static ?array $contentiteminfocache = null;
 
     /**
      * Constructor.
      *
-     * @param content_item_manager $contentitemmng Activity plugin manager
+     * @param content_item_manager $contentitemmng Content item plugin manager
      */
     public function __construct(
+        /** @var content_item_manager $contentitemmng Content item manager */
         private readonly content_item_manager $contentitemmng,
     ) {
     }
