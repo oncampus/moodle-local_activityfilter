@@ -106,12 +106,15 @@ class ai_searcher implements i_activity_searcher {
             return $directdecode;
         }
 
-        $start = strpos($jsontext, "```json");
+        // phpcs:ignore moodle.Strings.ForbiddenStrings.Found -- Parse Markdown JSON code fences from AI responses.
+        $startneedle = '```json';
+        $start = strpos($jsontext, $startneedle);
         if ($start === false) {
             return false;
         }
-        $start += strlen("```json");
+        $start += strlen($startneedle);
 
+        // phpcs:ignore moodle.Strings.ForbiddenStrings.Found -- Parse Markdown JSON code fences from AI responses.
         $end = strpos($jsontext, "```", $start);
         if ($end === false) {
             return false;

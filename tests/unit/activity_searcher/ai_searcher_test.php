@@ -45,6 +45,7 @@ final class ai_searcher_test extends advanced_testcase {
     public static function convert_ai_response_to_json_dataprovider(): array {
         return [
             'json inside markdown block' => [
+                // phpcs:ignore moodle.Strings.ForbiddenStrings.Found -- Test parsing of Markdown JSON code.
                 'Ich habe die JSON generiert hier bitte: ```json [{"name":"Kekse"}]```',
                 [['name' => 'Kekse']],
             ],
@@ -57,6 +58,7 @@ final class ai_searcher_test extends advanced_testcase {
                 false,
             ],
             'invalid JSON in codeblock' => [
+                // phpcs:ignore moodle.Strings.ForbiddenStrings.Found -- Test parsing of Markdown JSON code.
                 "```json\n{nope:}\n```",
                 false,
             ],
