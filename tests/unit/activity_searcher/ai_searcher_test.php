@@ -18,11 +18,12 @@ namespace local_activityfilter;
 
 use advanced_testcase;
 use core\di;
-use local_activityfilter\activity_searcher\activity_data;
-use local_activityfilter\activity_searcher\ai_searcher;
+use local_activityfilter\activity_searcher\content_item_manager;
+use local_activityfilter\activity_searcher\content_item_summarizer;
+use local_activityfilter\activity_searcher\contracts\content_item_info;
 use local_activityfilter\activity_searcher\contracts\activity_ranking;
 use local_activityfilter\activity_searcher\contracts\i_activity_searcher;
-use local_activityfilter\activity_searcher\i_text_compressor;
+use local_activityfilter\activity_searcher\i_content_item_summarizer;
 
 defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/content_item_generator.php');
@@ -44,6 +45,7 @@ final class ai_searcher_test extends advanced_testcase {
     public static function convert_ai_response_to_json_dataprovider(): array {
         return [
             'json inside markdown block' => [
+                // phpcs:ignore moodle.Strings.ForbiddenStrings.Found -- Test parsing of Markdown JSON code.
                 'Ich habe die JSON generiert hier bitte: ```json [{"name":"Kekse"}]```',
                 [['name' => 'Kekse']],
             ],
@@ -56,6 +58,7 @@ final class ai_searcher_test extends advanced_testcase {
                 false,
             ],
             'invalid JSON in codeblock' => [
+                // phpcs:ignore moodle.Strings.ForbiddenStrings.Found -- Test parsing of Markdown JSON code.
                 "```json\n{nope:}\n```",
                 false,
             ],
@@ -81,7 +84,7 @@ final class ai_searcher_test extends advanced_testcase {
     public function test_convert_ai_response_to_json(string $jsontext, array|false $expectedjsonobject): void {
         $aisearcher = di::get(i_activity_searcher::class);
 
-        $jsonobject = $aisearcher->convert_ai_response_to_json($jsontext);
+        $jsonobject = $aisearcher->convert_ai_response_from_json($jsontext);
 
         $this->assertEquals($expectedjsonobject, $jsonobject);
     }
@@ -121,13 +124,17 @@ final class ai_searcher_test extends advanced_testcase {
      * @dataProvider convert_json_to_ranking_dataprovider
      */
     public function test_convert_json_to_ranking(mixed $jsonobject, array $expectedrankings): void {
+        $contentitemmng = new content_item_summarizer(
+            di::get(content_item_manager::class),
+            [
+                new content_item_info(content_item_generator::generate_content_item('kekse', ['help' => 'Hilfe'])),
+                new content_item_info(content_item_generator::generate_content_item('leber', ['help' => 'Hilfe2'])),
+            ]
+        );
+        di::set(i_content_item_summarizer::class, $contentitemmng);
         $aisearcher = di::get(i_activity_searcher::class);
-        $activitydata = [
-            new activity_data(content_item_generator::generate_content_item('kekse', ['help' => 'Hilfe'])),
-            new activity_data(content_item_generator::generate_content_item('leber', ['help' => 'Hilfe2'])),
-        ];
 
-        $rankings = $aisearcher->convert_json_to_ranking($jsonobject, $activitydata);
+        $rankings = $aisearcher->convert_data_to_ranking($jsonobject);
 
         $this->assertEquals($expectedrankings, $rankings);
     }

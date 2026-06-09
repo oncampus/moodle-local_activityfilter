@@ -16,22 +16,23 @@
 
 namespace local_activityfilter\local;
 
-use context_system;
 use core\di;
 use core\hook\output\before_html_attributes;
 use core\hook\di_configuration;
-use core_ai\aiactions\generate_text;
 use core_ai\manager;
-use core_plugin_manager;
-use local_activityfilter\activity_searcher\ai_dummy_searcher;
+use local_activityfilter\activity_searcher\backend\ai_backend;
+use local_activityfilter\activity_searcher\backend\core_ai;
+use local_activityfilter\activity_searcher\backend\demo_ai;
+use local_activityfilter\activity_searcher\backend\local_ai_manager;
+use local_activityfilter\activity_searcher\backend\no_ai;
 use local_activityfilter\activity_searcher\content_item_manager;
-use local_activityfilter\activity_searcher\activity_summarizer;
+use local_activityfilter\activity_searcher\content_item_summarizer;
 use local_activityfilter\activity_searcher\ai_searcher;
 use local_activityfilter\activity_searcher\contracts\i_activity_searcher;
-use local_activityfilter\activity_searcher\i_activity_summarizer;
+use local_activityfilter\activity_searcher\i_content_item_summarizer;
 use local_activityfilter\activity_searcher\i_text_compressor;
 use local_activityfilter\activity_searcher\stopword_remover;
-use moodle_database;
+use local_ai_manager\hook\purpose_usage;
 
 /**
  * Hook Callback definitions.
@@ -49,6 +50,22 @@ class hook_callbacks {
      */
     public static function di_configuration(di_configuration $hook): void {
         $hook->add_definition(
+            id: ai_backend::class,
+            definition: function (
+                manager $coreaimanager
+            ): ai_backend {
+                $backend = get_config('local_activityfilter', 'backend');
+
+                return match ($backend) {
+                    'dummy_mode' => new demo_ai(),
+                    'local_ai_manager' => new local_ai_manager(),
+                    'core_ai_subsystem' => new core_ai($coreaimanager),
+                    default => new no_ai(),
+                };
+            }
+        );
+
+        $hook->add_definition(
             id: i_text_compressor::class,
             definition: function (): i_text_compressor {
                 return new stopword_remover();
@@ -56,9 +73,9 @@ class hook_callbacks {
         );
 
         $hook->add_definition(
-            id: i_activity_summarizer::class,
-            definition: function (): i_activity_summarizer {
-                return new activity_summarizer(
+            id: i_content_item_summarizer::class,
+            definition: function (): i_content_item_summarizer {
+                return new content_item_summarizer(
                     new content_item_manager(),
                 );
             }
@@ -67,13 +84,9 @@ class hook_callbacks {
         $hook->add_definition(
             id: i_activity_searcher::class,
             definition: function (
-                i_activity_summarizer $summerizer,
-                manager $aimanager,
+                i_content_item_summarizer $summerizer,
+                ai_backend $aimanager,
             ): i_activity_searcher {
-                if (get_config('local_activityfilter', 'dummy_mode')) {
-                    return new ai_dummy_searcher();
-                }
-
                 return new ai_searcher(
                     $summerizer,
                     new stopword_remover(),
@@ -84,16 +97,13 @@ class hook_callbacks {
     }
 
     /**
-     * Injects JS to add activity filter to course section menu
+     * Injects JS to add activity filter to course section menu.
      *
-     * @param before_html_attributes $hook After config hook
+     * @param before_html_attributes $hook After config hook.
      * @return void
      */
     public static function before_html_attributes(before_html_attributes $hook): void {
-        if (
-            !di::get(manager::class)->is_action_available(generate_text::class)
-            && !get_config('local_activityfilter', 'dummy_mode')
-        ) {
+        if (!di::get(ai_backend::class)->available()) {
             return;
         }
 
@@ -107,7 +117,6 @@ class hook_callbacks {
             return;
         }
 
-        global $PAGE;
         $PAGE->requires->js_call_amd(
             'local_activityfilter/auto_resize_text_field',
             'init'
@@ -115,6 +124,23 @@ class hook_callbacks {
         $PAGE->requires->js_call_amd(
             'local_activityfilter/content_item_filter_modal',
             'init'
+        );
+    }
+
+    /**
+     * Provide additional information about which purposes are being used by this plugin.
+     *
+     * @param purpose_usage $hook The purpose_usage hook object.
+     */
+    public static function handle_purpose_usage(purpose_usage $hook): void {
+        $hook->set_component_displayname(
+            'local_activityfilter',
+            get_string('pluginname', 'local_activityfilter')
+        );
+        $hook->add_purpose_usage_description(
+            'singleprompt',
+            'local_activityfilter',
+            get_string('purposeplacedescription_singleprompt', 'local_activityfilter')
         );
     }
 }

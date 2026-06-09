@@ -52,7 +52,7 @@ class filter_activities extends external_api {
         require_capability('local/activityfilter:filter_activities', $ctx);
 
         $activitysearcher = di::get(i_activity_searcher::class);
-        return $activitysearcher->filter_activities($params['prompt']);
+        return $activitysearcher->filter_activities($params['prompt'], $ctx->id);
     }
 
     /**

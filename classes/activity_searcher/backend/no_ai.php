@@ -14,22 +14,35 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace local_activityfilter\activity_searcher\contracts;
+namespace local_activityfilter\activity_searcher\backend;
+
+use RuntimeException;
 
 /**
- * Filters for the user which activities fit his request
+ * No AI backend system selected, plugin is effectively disabled
  *
  * @author Konrad Ebel <konrad.ebel@oncampus.de>
- * @copyright 2025, oncampus GmbH
+ * @copyright 2026, oncampus GmbH
  * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-interface i_activity_searcher {
+class no_ai implements ai_backend {
     /**
-     * Gives the user a ranking list back, based on its request.
+     * Not available, cause no AI selected
      *
-     * @param string $request User request.
-     * @param int $contextid The context ID for the AI request.
-     * @return activity_ranking[] List of activity rankings.
+     * @return bool Always false
      */
-    public function filter_activities(string $request, int $contextid = 0): array;
+    public function available(): bool {
+        return false;
+    }
+
+    /**
+     * Throws a not implemented error, should never be called
+     *
+     * @param string $prompttext
+     * @param int $contextid
+     * @return string
+     */
+    public function send_request(string $prompttext, int $contextid): string {
+        throw new RuntimeException('No Backend AI set');
+    }
 }

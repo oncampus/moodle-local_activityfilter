@@ -16,6 +16,7 @@
 
 namespace local_activityfilter\activity_searcher\contracts;
 
+use dml_exception;
 use stdClass;
 
 /**
@@ -68,6 +69,35 @@ class activity_ranking {
         $this->occurrences = $occurrences;
         $this->ranking = $ranking;
         $this->logohtml = $logohtml;
+    }
+
+    /**
+     * Create activity ranking
+     *
+     * @param string $pluginname Name of the plugin
+     * @param string $reason Reason for being practical in the use case
+     * @param string $hint Short description of the plugin
+     * @param int $ranking Rating from 0 to 10
+     * @param content_item_info $activity Plugin information
+     * @return activity_ranking Itself
+     * @throws dml_exception
+     */
+    public static function create(
+        string $pluginname,
+        string $reason,
+        string $hint,
+        int $ranking,
+        content_item_info $activity
+    ): activity_ranking {
+        return self::from_stdclass((object)[
+            'pluginname' => $pluginname,
+            'reason' => $reason,
+            'hint' => $hint,
+            'ranking' => $ranking,
+            'occurrences' => $activity->get_usage_amount(),
+            'title' => $activity->get_title(),
+            'logohtml' => $activity->get_logo_html(),
+        ]);
     }
 
     /**

@@ -16,30 +16,35 @@
 
 namespace local_activityfilter\activity_searcher;
 
-use Exception;
-use local_activityfilter\activity_searcher\contracts\i_activity_searcher;
+use local_activityfilter\activity_searcher\contracts\content_item_info;
 
 /**
- * Gives back dummy replies for activity searches
+ * Summarizes Infos about content items
  *
  * @author Konrad Ebel <konrad.ebel@oncampus.de>
  * @copyright 2025, oncampus GmbH
  * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class ai_dummy_searcher implements i_activity_searcher {
+interface i_content_item_summarizer {
     /**
-     * Return dummy reply
+     * Summarizes infos about a single content item
      *
-     * @param string $request Ignored request
-     * @return contracts\activity_ranking[] Stale dummy reply for activity search
-     * @throws Exception
+     * @param string $pluginname Plugin name to search by
+     * @return content_item_info|false Content item description, False if not found
      */
-    public function filter_activities(string $request): array {
-        $response = file_get_contents(__DIR__ . '/dummydata.json');
-        $decoded = json_decode($response, true);
-        if ($decoded === null) {
-            throw new Exception("Json encode error: " . json_last_error_msg());
-        }
-        return $decoded;
-    }
+    public function get_content_item_info(string $pluginname): content_item_info|false;
+
+    /**
+     * Summarizes infos about all active content items in moodle
+     *
+     * @return content_item_info[] List of content item descriptions
+     */
+    public function get_content_item_infos(): array;
+
+    /**
+     * Gets all content items from moodle (as StdClass)
+     *
+     * @return array|null List of mods in moodle
+     */
+    public function get_activities(): array|null;
 }

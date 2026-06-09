@@ -14,22 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace local_activityfilter\activity_searcher\contracts;
+namespace local_activityfilter\activity_searcher\backend;
+
+use core\exception\moodle_exception;
+use Exception;
 
 /**
- * Filters for the user which activities fit his request
+ * AI Backend for activity_searcher plugin
  *
  * @author Konrad Ebel <konrad.ebel@oncampus.de>
- * @copyright 2025, oncampus GmbH
+ * @copyright 2026, oncampus GmbH
  * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-interface i_activity_searcher {
+interface ai_backend {
     /**
-     * Gives the user a ranking list back, based on its request.
+     * Backend is available and configured
      *
-     * @param string $request User request.
-     * @param int $contextid The context ID for the AI request.
-     * @return activity_ranking[] List of activity rankings.
+     * @return bool True if available and configured
      */
-    public function filter_activities(string $request, int $contextid = 0): array;
+    public function available(): bool;
+
+    /**
+     * Send singleprompt to AI and receive answer as string
+     *
+     * @param string $prompttext Prompt (User + Systemprompt)
+     * @param int $contextid Context, where AI is called
+     * @return string Response of the AI
+     * @throws moodle_exception|Exception AI Call failed
+     */
+    public function send_request(string $prompttext, int $contextid): string;
 }

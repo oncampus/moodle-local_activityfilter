@@ -1,64 +1,43 @@
 [
   {
     "pluginname": "assign",
-    "title": "Zuweisen",
-    "logohtml": "<i class='icon-search'></i>",
     "ranking": 9,
-    "occurrences": 132,
     "hint": "Allows teachers to assign tasks, collect student work (files & text), and provide feedback\/grades.",
     "reason": "Directly addresses task assignment, submission and grading - a core function for many learning scenarios."
   },
   {
     "pluginname": "bigbluebuttonbn",
-    "title": "BigBlueButton",
-    "logohtml": "<i class='icon-search'></i>",
     "ranking": 8,
-    "occurrences": 23,
     "hint": "Provides a web conferencing platform for live online classes, virtual office hours, and group collaboration.",
     "reason": "Supports real-time interaction and collaboration, crucial for many educational activities."
   },
   {
-    "pluginname": "chat",
-    "title": "Forum",
-    "logohtml": "<i class='icon-search'></i>",
+    "pluginname": "forum",
     "ranking": 7,
-    "occurrences": 64,
     "hint": "Enables text-based, real-time synchronous discussions among participants.",
     "reason": "Facilitates communication and discussion, especially useful for remote learning or group projects."
   },
   {
-    "pluginname": "Choice",
-    "title": "Abstimmung",
-    "logohtml": "<i class='icon-search'></i>",
+    "pluginname": "choice",
     "ranking": 6,
-    "occurrences": 23,
     "hint": "Allows teachers to link to external URLs (websites, files) for various purposes.",
     "reason": "Useful for providing links to resources or activities outside the platform."
   },
   {
     "pluginname": "workshop",
-    "title": "Gruppenarbeit",
-    "logohtml": "<i class='icon-search'></i>",
     "ranking": 7,
-    "occurrences": 13,
     "hint": "Facilitates collection, review, and peer assessment of student work.",
     "reason": "Supports collaborative learning and feedback processes."
   },
   {
     "pluginname": "book",
-    "title": "Buch",
-    "logohtml": "<i class='icon-search'></i>",
     "ranking": 5,
-    "occurrences": 2,
     "hint": "Creates multi-page resources with chapters, subchapters, text & media for displaying information.",
     "reason": "Useful for presenting lengthy content in a structured and organized manner."
   },
   {
     "pluginname": "wiki",
-    "title": "Wiki",
-    "logohtml": "<i class='icon-search'></i>",
     "ranking": 5,
-    "occurrences": 3,
     "hint": "Enables collaborative creation and editing of web pages.",
     "reason": "Suitable for group notes, shared documents, or collaborative projects."
   }

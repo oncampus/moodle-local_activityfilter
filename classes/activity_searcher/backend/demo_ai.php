@@ -14,27 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace local_activityfilter\activity_searcher;
+namespace local_activityfilter\activity_searcher\backend;
 
 /**
- * Summarizes Infos about the Mod Plugins
+ * Dummy, that always returns the same answer
  *
  * @author Konrad Ebel <konrad.ebel@oncampus.de>
- * @copyright 2025, oncampus GmbH
+ * @copyright 2026, oncampus GmbH
  * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-interface i_activity_summarizer {
+class demo_ai implements ai_backend {
     /**
-     * Summarizes infos about all active activities in moodle
+     * Cannot be disabled or be unconfigured
      *
-     * @return activity_data[] List of activity data
+     * @return bool Always true
      */
-    public function get_activity_data(): array;
+    public function available(): bool {
+        return true;
+    }
 
     /**
-     * Gets all activities from moodle
+     * Return dummy reply
      *
-     * @return array|null List of mods in moodle
+     * @param string $prompttext Ignored request
+     * @param int $contextid Ignored context ID.
+     * @return string Stale dummy reply for activity search
      */
-    public function get_activities(): array|null;
+    public function send_request(string $prompttext, int $contextid = 0): string {
+        return file_get_contents(__DIR__ . '/dummydata.json');
+    }
 }

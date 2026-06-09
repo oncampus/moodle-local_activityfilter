@@ -22,7 +22,7 @@
  */
 
 use core\di;
-use local_activityfilter\activity_searcher\i_activity_summarizer;
+use local_activityfilter\activity_searcher\i_content_item_summarizer;
 use local_activityfilter\local\overwritten_content_item_description;
 
 defined('MOODLE_INTERNAL') || die();
@@ -52,27 +52,33 @@ $settings->add(
 Task: Evaluate the query and return the best-matching activities.
 
 Output format: A JSON array (string) where each object contains (dont give any comments):
-{[{
+[{
 "pluginname": "Name without mod_",
 "ranking": 1–10,
 "hint": "Short usage summary",
 "reason": "Why this plugin fits the query"
-}, ...]}'
+}, ...]'
         ),
         PARAM_TEXT
     )
 );
 
 $settings->add(
-    new admin_setting_configcheckbox(
-        'local_activityfilter/dummy_mode',
-        get_string('settings:dummy_mode', 'local_activityfilter'),
-        get_string('settings:dummy_mode_desc', 'local_activityfilter'),
-        false
+    new admin_setting_configselect(
+        'local_activityfilter/backend',
+        get_string('settings:backend', 'local_activityfilter'),
+        get_string('settings:backend_desc', 'local_activityfilter'),
+        'core_ai_subsystem',
+        [
+            'disabled' => get_string('settings:disabled', 'local_activityfilter'),
+            'dummy_mode' => get_string('settings:backend_dummy_mode', 'local_activityfilter'),
+            'core_ai_subsystem' => get_string('settings:backend_coreai', 'local_activityfilter'),
+            'local_ai_manager' => get_string('settings:backend_localaimanager', 'local_activityfilter'),
+        ]
     )
 );
 
-$activitysummerizer = di::get(i_activity_summarizer::class);
+$activitysummerizer = di::get(i_content_item_summarizer::class);
 $activities = $activitysummerizer->get_activities();
 
 foreach ($activities as $activity) {
