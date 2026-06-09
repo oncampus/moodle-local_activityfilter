@@ -30,18 +30,18 @@ use RuntimeException;
  * @copyright 2025, oncampus GmbH
  * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class content_item_summerizer implements i_content_item_summarizer {
-    /** @var array|null $contentiteminfocache Cached content item infos */
-    private static ?array $contentiteminfocache = null;
-
+class content_item_summarizer implements i_content_item_summarizer {
     /**
      * Constructor.
      *
      * @param content_item_manager $contentitemmng Content item plugin manager
+     * @param array|null $contentiteminfocache Cached content item infos
      */
     public function __construct(
         /** @var content_item_manager $contentitemmng Content item manager */
         private readonly content_item_manager $contentitemmng,
+        /** @var array|null $contentiteminfocache Cached content item infos */
+        private ?array $contentiteminfocache = null,
     ) {
     }
 
@@ -49,23 +49,25 @@ class content_item_summerizer implements i_content_item_summarizer {
      * Combines all activity data for an option summary
      *
      * @return content_item_info[] List of activity data
-     * @throws coding_exception
-     * @throws dml_exception
      */
     public function get_content_item_infos(): array {
-        if (self::$contentiteminfocache) {
-            return self::$contentiteminfocache;
-        }
+        return $this->contentiteminfocache ??= $this->build_content_item_infos();
+    }
 
+    /**
+     * Builds content item infos
+     *
+     * @return content_item_info[] list of content item infos
+     */
+    private function build_content_item_infos(): array {
         $contentitems = $this->contentitemmng->get_all();
         if (empty($contentitems)) {
             throw new RuntimeException("No content items found");
         }
 
-        self::$contentiteminfocache = array_map(function (content_item $item): content_item_info {
+        return array_map(function (content_item $item): content_item_info {
             return new content_item_info($item);
         }, $contentitems);
-        return self::$contentiteminfocache;
     }
 
     /**
@@ -75,9 +77,7 @@ class content_item_summerizer implements i_content_item_summarizer {
      * @return content_item_info|false If plugin name is not found in given activity data
      */
     public function get_content_item_info(string $pluginname): content_item_info|false {
-        $activities = $this->get_content_item_infos();
-
-        foreach ($activities as $activity) {
+        foreach ($this->get_content_item_infos() as $activity) {
             if ($activity->get_name() == $pluginname) {
                 return $activity;
             }

@@ -18,7 +18,7 @@ namespace local_activityfilter;
 
 use advanced_testcase;
 use core_course\local\entity\content_item;
-use local_activityfilter\activity_searcher\content_item_summerizer;
+use local_activityfilter\activity_searcher\content_item_summarizer;
 use local_activityfilter\activity_searcher\content_item_manager;
 use local_activityfilter\activity_searcher\contracts\content_item_info;
 
@@ -28,14 +28,14 @@ require_once(__DIR__ . '/content_item_generator.php');
 /**
  * Unit test for Activity Summarizer.
  *
- * @covers \local_activityfilter\activity_searcher\content_item_summerizer
+ * @covers \local_activityfilter\activity_searcher\content_item_summarizer
  * @author Konrad Ebel <konrad.ebel@oncampus.de>
  * @copyright 2025, oncampus GmbH
  * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class activity_summarizer_test extends advanced_testcase {
-    /** @var content_item_summerizer Object to test */
-    private content_item_summerizer $activitysummerizer;
+    /** @var content_item_summarizer Object to test */
+    private content_item_summarizer $activitysummerizer;
     /** @var content_item Testing object */
     private content_item $contentitem;
 
@@ -58,7 +58,7 @@ final class activity_summarizer_test extends advanced_testcase {
         $activities->method('get_all')
             ->willReturn([$this->contentitem]);
 
-        $this->activitysummerizer = new content_item_summerizer(
+        $this->activitysummerizer = new content_item_summarizer(
             $activities
         );
     }

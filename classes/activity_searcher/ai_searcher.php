@@ -17,6 +17,7 @@
 namespace local_activityfilter\activity_searcher;
 
 use context_system;
+use core\exception\moodle_exception;
 use dml_exception;
 use local_activityfilter\activity_searcher\backend\ai_backend;
 use local_activityfilter\activity_searcher\contracts\content_item_info;
@@ -52,10 +53,9 @@ class ai_searcher implements i_activity_searcher {
      * It will return an array of activity rankings.
      *
      * @param string $request User request.
-     * @param int $contextid The context ID for the AI request.
+     * @param int|null $contextid The context ID for the AI request.
      * @return activity_ranking[] List of activity rankings.
-     * @throws dml_exception
-     * @throws invalid_ai_response
+     * @throws dml_exception|invalid_ai_response|moodle_exception
      */
     public function filter_activities(string $request, ?int $contextid = null): array {
         $prompttext = $this->build_prompt_text($request);

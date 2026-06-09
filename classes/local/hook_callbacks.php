@@ -26,7 +26,7 @@ use local_activityfilter\activity_searcher\backend\demo_ai;
 use local_activityfilter\activity_searcher\backend\local_ai_manager;
 use local_activityfilter\activity_searcher\backend\no_ai;
 use local_activityfilter\activity_searcher\content_item_manager;
-use local_activityfilter\activity_searcher\content_item_summerizer;
+use local_activityfilter\activity_searcher\content_item_summarizer;
 use local_activityfilter\activity_searcher\ai_searcher;
 use local_activityfilter\activity_searcher\contracts\i_activity_searcher;
 use local_activityfilter\activity_searcher\i_content_item_summarizer;
@@ -75,7 +75,7 @@ class hook_callbacks {
         $hook->add_definition(
             id: i_content_item_summarizer::class,
             definition: function (): i_content_item_summarizer {
-                return new content_item_summerizer(
+                return new content_item_summarizer(
                     new content_item_manager(),
                 );
             }
