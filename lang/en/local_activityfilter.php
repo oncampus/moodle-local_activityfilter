@@ -49,11 +49,11 @@ $string['reasoncolumn'] = 'Reason';
 $string['search'] = 'Search';
 
 $string['settings:backend'] = 'AI backend';
-$string['settings:backend_desc'] = 'Select which AI backend to use for activity filtering.';
-$string['settings:disabled'] = 'Disabled';
 $string['settings:backend_coreai'] = 'Moodle core AI subsystem';
+$string['settings:backend_desc'] = 'Select which AI backend to use for activity filtering.';
 $string['settings:backend_dummy_mode'] = 'Dummy mode';
 $string['settings:backend_localaimanager'] = 'local_ai_manager (mebis)';
+$string['settings:disabled'] = 'Disabled';
 $string['settings:plugin_ai_hint'] = 'Guidance text that informs the AI about the plugin\'s features and behaviour.';
 $string['settings:systemprompt'] = 'System prompt';
 $string['settings:systemprompt_desc'] = 'Defines the system prompt used to guide the behaviour and responses of the AI model.';

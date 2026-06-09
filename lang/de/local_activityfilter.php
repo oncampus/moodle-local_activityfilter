@@ -49,11 +49,11 @@ $string['reasoncolumn'] = 'Begründung';
 $string['search'] = 'Suchen';
 
 $string['settings:backend'] = 'KI-Backend';
-$string['settings:backend_desc'] = 'Wählen Sie das KI-Backend für die Aktivitätenfilterung aus.';
-$string['settings:disabled'] = 'Deaktiviert';
-$string['settings:backend_dummy_mode'] = 'Dummy-Modus';
 $string['settings:backend_coreai'] = 'Moodle Core KI-Subsystem';
+$string['settings:backend_desc'] = 'Wählen Sie das KI-Backend für die Aktivitätenfilterung aus.';
+$string['settings:backend_dummy_mode'] = 'Dummy-Modus';
 $string['settings:backend_localaimanager'] = 'local_ai_manager (mebis)';
+$string['settings:disabled'] = 'Deaktiviert';
 $string['settings:plugin_ai_hint'] = 'Leittext, der der KI erklärt, welche Möglichkeiten dieses Plugin bietet.';
 $string['settings:systemprompt'] = 'System-Prompt';
 $string['settings:systemprompt_desc'] = 'Legt den System-Prompt fest, der das Verhalten und die Antworten des KI-Modells steuert.';

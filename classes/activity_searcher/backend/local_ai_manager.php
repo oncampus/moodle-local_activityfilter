@@ -21,7 +21,20 @@ use core\exception\moodle_exception;
 use local_ai_manager\local\tenant;
 use local_ai_manager\manager;
 
+/**
+ * Mebis AI System
+ *
+ * @author Konrad Ebel <konrad.ebel@oncampus.de>
+ * @copyright 2026, oncampus GmbH
+ * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class local_ai_manager implements ai_backend {
+    /**
+     * Only available and configured, if tenant is allowed
+     * and singleprompt is configured
+     *
+     * @return bool Tenant allowed and singleprompt is configured
+     */
     public function available(): bool {
         if (!class_exists('\local_ai_manager\local\tenant')) {
             return false;
@@ -47,7 +60,7 @@ class local_ai_manager implements ai_backend {
      * @param string $prompttext The prompt text.
      * @param int $contextid The context ID.
      * @return string AI Response.
-     * @throws \moodle_exception
+     * @throws moodle_exception
      */
     public function send_request(string $prompttext, int $contextid): string {
         $manager = new manager('singleprompt');
