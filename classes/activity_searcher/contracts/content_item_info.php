@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace local_activityfilter\activity_searcher;
+namespace local_activityfilter\activity_searcher\contracts;
 
 use core\di;
-use core\test\handler_one;
 use core_course\local\entity\content_item;
 use dml_exception;
 use JsonSerializable;
+use local_activityfilter\activity_searcher\i_text_compressor;
 use local_activityfilter\local\overwritten_content_item_description;
 use moodle_database;
 
@@ -31,7 +31,7 @@ use moodle_database;
  * @copyright 2025, oncampus GmbH
  * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class activity_data implements JsonSerializable {
+class content_item_info implements JsonSerializable {
     /** @var moodle_database Moodle Database */
     private readonly moodle_database $db;
     /** @var i_text_compressor Text Compressor */

@@ -17,10 +17,9 @@
 namespace local_activityfilter\activity_searcher;
 
 use context_system;
-use core_ai\aiactions\generate_text;
-use core_ai\manager;
 use dml_exception;
-use Exception;
+use local_activityfilter\activity_searcher\backend\ai_backend;
+use local_activityfilter\activity_searcher\contracts\content_item_info;
 use local_activityfilter\activity_searcher\contracts\activity_ranking;
 use local_activityfilter\activity_searcher\contracts\i_activity_searcher;
 
@@ -34,40 +33,40 @@ class ai_searcher implements i_activity_searcher {
     /**
      * Constructor.
      *
-     * @param i_activity_summarizer $summerizer Activity summarizer
+     * @param i_content_item_summarizer $summerizer Activity summarizer
      * @param i_text_compressor $compressor Text compressor
-     * @param manager $aimanager AI Manager
+     * @param ai_backend $aimanager AI Manager
      */
     public function __construct(
-        /** @var i_activity_summarizer Activity summarizer */
-        private readonly i_activity_summarizer $summerizer,
+        /** @var i_content_item_summarizer Activity summarizer */
+        private readonly i_content_item_summarizer $summerizer,
         /** @var i_text_compressor Text compressor */
-        private readonly i_text_compressor $compressor,
-        /** @var manager AI Manager */
-        private readonly manager $aimanager,
+        private readonly i_text_compressor         $compressor,
+        /** @var ai_backend AI Manager */
+        private readonly ai_backend                $aimanager,
     ) {
     }
 
     /**
-     * Searches for activities fitting to the given user request
-     * It will return an array of activity rankings
+     * Searches for activities fitting to the given user request.
+     * It will return an array of activity rankings.
      *
-     * @param string $request User request
-     * @return activity_ranking[] List of activity rankings
+     * @param string $request User request.
+     * @param int $contextid The context ID for the AI request.
+     * @return activity_ranking[] List of activity rankings.
      * @throws dml_exception
      * @throws invalid_ai_response
      */
-    public function filter_activities(string $request): array {
-        $activitysummary = $this->summerizer->get_activity_data();
-        $prompt = self::prepare_prompt($request, $activitysummary);
-        $response = self::send_request($prompt);
+    public function filter_activities(string $request, ?int $contextid = null): array {
+        $prompttext = $this->build_prompt_text($request);
+        $response = $this->aimanager->send_request($prompttext, $contextid ?? context_system::instance()->id);
 
-        $json = $this->convert_ai_response_to_json($response);
+        $json = $this->convert_ai_response_from_json($response);
         if ($json === false) {
             throw new invalid_ai_response("Invalid AI feedback: " . $response);
         }
 
-        $ratings = $this->convert_json_to_ranking($json, $activitysummary);
+        $ratings = $this->convert_data_to_ranking($json);
         if ($ratings === false) {
             throw new invalid_ai_response("Invalid AI feedback: " . $response);
         }
@@ -76,74 +75,49 @@ class ai_searcher implements i_activity_searcher {
     }
 
     /**
-     * Prepares the complete AI Request
+     * Builds the prompt text from user request and activity data.
      *
-     * @param string $userrequest User request
-     * @param activity_data[] $activitydata List of activity data
-     * @return generate_text Generate text task
+     * @param string $userrequest User request.
+     * @return string The prompt text.
      * @throws dml_exception
      */
-    public function prepare_prompt(string $userrequest, array $activitydata): generate_text {
-        global $USER;
-        $plugindescription = json_encode($activitydata, JSON_UNESCAPED_UNICODE);
-        $plugindescription = preg_replace('/<[^>]*>/', '', $plugindescription);
-        $plugindescription = str_replace("\/innen", "", $plugindescription);
-        $plugindescription = str_replace("\/", "/", $plugindescription);
-        $plugindescription = str_replace('},{', "\n", $plugindescription);
+    public function build_prompt_text(string $userrequest): string {
+        $contentiteminfos = $this->summerizer->get_content_item_infos();
+        $contentiteminfos = json_encode($contentiteminfos, JSON_UNESCAPED_UNICODE);
+        $contentiteminfos = preg_replace('/<[^>]*>/', '', $contentiteminfos);
+        $contentiteminfos = str_replace("\/innen", "", $contentiteminfos);
+        $contentiteminfos = str_replace("\/", "/", $contentiteminfos);
+        $contentiteminfos = str_replace('},{', "\n", $contentiteminfos);
 
-        $promptmsg = (
-            get_config('local_activityfilter', 'systemprompt') .
-            'Plugin descriptions ' . $plugindescription . "\n" .
-            'User request: ' . $this->compressor->compress($userrequest)
-        );
-
-        return new generate_text(
-            context_system::instance()->id,
-            $USER->id,
-            $promptmsg
-        );
-    }
-
-    /**
-     * Sends the request to the AI Manager
-     *
-     * @param generate_text $prompts Generate text request
-     * @return string AI Response
-     * @throws Exception
-     */
-    public function send_request(generate_text $prompts): string {
-        $response = $this->aimanager->process_action($prompts);
-        if (!$response->get_success()) {
-            throw new Exception($response->get_errormessage());
-        }
-
-        return $response->get_response_data()['generatedcontent'];
+        return get_config('local_activityfilter', 'systemprompt') .
+            'Plugin descriptions ' . $contentiteminfos . "\n" .
+            'User request: ' . $this->compressor->compress($userrequest);
     }
 
     /**
      * Convert AI Response to an json
      *
-     * @param string $text AI Response text
+     * @param string $jsontext AI Response text
      * @return array|false Converted json object or false if not convertable
      */
-    public function convert_ai_response_to_json(string $text): array|false {
-        $directdecode = json_decode($text, true);
+    public function convert_ai_response_from_json(string $jsontext): array|false {
+        $directdecode = json_decode($jsontext, true);
         if (json_last_error() == JSON_ERROR_NONE) {
             return $directdecode;
         }
 
-        $start = strpos($text, "```json");
+        $start = strpos($jsontext, "```json");
         if ($start === false) {
             return false;
         }
         $start += strlen("```json");
 
-        $end = strpos($text, "```", $start);
+        $end = strpos($jsontext, "```", $start);
         if ($end === false) {
             return false;
         }
 
-        $json = trim(substr($text, $start, $end - $start));
+        $json = trim(substr($jsontext, $start, $end - $start));
 
         $data = json_decode($json, true);
         return is_array($data) ? $data : false;
@@ -153,10 +127,9 @@ class ai_searcher implements i_activity_searcher {
      * Convert json object to ranking data
      *
      * @param mixed $json Array object or other data converted from json
-     * @param activity_data[] $activitydata Unconverted activity data
      * @return activity_ranking[]|false Converted AI Response as rankings
      */
-    public function convert_json_to_ranking(mixed $json, array $activitydata): array|false {
+    public function convert_data_to_ranking(mixed $json): array|false {
         $data = [];
         foreach ($json as $rankingdata) {
             $pluginname = $rankingdata["pluginname"] ?? false;
@@ -164,34 +137,19 @@ class ai_searcher implements i_activity_searcher {
                 continue;
             }
 
-            $activity = $this->find_activity($rankingdata["pluginname"], $activitydata);
-            if (!$activity) {
+            if (!$activity = $this->summerizer->get_content_item_info($pluginname)) {
                 continue;
             }
 
-            $rankingdata['occurrences'] = $activity->get_usage_amount();
-            $rankingdata['logohtml'] = $activity->get_logo_html();
-            $rankingdata['title'] = $activity->get_title();
-            $data[] = activity_ranking::from_stdclass((object)$rankingdata);
+            $data[] = activity_ranking::create(
+                $pluginname,
+                $rankingdata['reason'] ?? '',
+                $rankingdata['hint'] ?? '',
+                intval($rankingdata['ranking']),
+                $activity
+            );
         }
 
         return $data;
-    }
-
-    /**
-     * Searches if plugin exist in activity data
-     *
-     * @param string $pluginname Activity name
-     * @param activity_data[] $activitydata List of all choose able activities
-     * @return activity_data|false If plugin name is not found in given activity data
-     */
-    public function find_activity(string $pluginname, array $activitydata): activity_data|false {
-        foreach ($activitydata as $activity) {
-            if ($activity->get_name() == $pluginname) {
-                return $activity;
-            }
-        }
-
-        return false;
     }
 }

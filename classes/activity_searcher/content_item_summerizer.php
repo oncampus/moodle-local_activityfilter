@@ -19,8 +19,7 @@ namespace local_activityfilter\activity_searcher;
 use coding_exception;
 use core_course\local\entity\content_item;
 use dml_exception;
-use local_activityfilter\local\overwritten_content_item_description;
-use moodle_database;
+use local_activityfilter\activity_searcher\contracts\content_item_info;
 use RuntimeException;
 
 /**
@@ -31,37 +30,58 @@ use RuntimeException;
  * @copyright 2025, oncampus GmbH
  * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class activity_summarizer implements i_activity_summarizer {
-    /** @var content_item_manager Activity plugin manager */
-    private readonly content_item_manager $activityplugins;
+class content_item_summerizer implements i_content_item_summarizer {
+    private static ?array $contentiteminfocache = null;
 
     /**
      * Constructor.
      *
-     * @param content_item_manager $activityplugins Activity plugin manager
+     * @param content_item_manager $contentitemmng Activity plugin manager
      */
     public function __construct(
-        content_item_manager $activityplugins,
+        private readonly content_item_manager $contentitemmng,
     ) {
-        $this->activityplugins = $activityplugins;
     }
 
     /**
      * Combines all activity data for an option summary
      *
-     * @return activity_data[] List of activity data
+     * @return content_item_info[] List of activity data
      * @throws coding_exception
      * @throws dml_exception
      */
-    public function get_activity_data(): array {
-        $contentitems = $this->activityplugins->get_all();
+    public function get_content_item_infos(): array {
+        if (self::$contentiteminfocache) {
+            return self::$contentiteminfocache;
+        }
+
+        $contentitems = $this->contentitemmng->get_all();
         if (empty($contentitems)) {
             throw new RuntimeException("No content items found");
         }
 
-        return array_map(function (content_item $item): activity_data {
-            return new activity_data($item);
+        self::$contentiteminfocache = array_map(function (content_item $item): content_item_info {
+            return new content_item_info($item);
         }, $contentitems);
+        return self::$contentiteminfocache;
+    }
+
+    /**
+     * Searches if plugin exist in activity data
+     *
+     * @param string $pluginname Activity name
+     * @return content_item_info|false If plugin name is not found in given activity data
+     */
+    public function get_content_item_info(string $pluginname): content_item_info|false {
+        $activities = $this->get_content_item_infos();
+
+        foreach ($activities as $activity) {
+            if ($activity->get_name() == $pluginname) {
+                return $activity;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -70,6 +90,6 @@ class activity_summarizer implements i_activity_summarizer {
      * @return array List of all choose able activity plugins
      */
     public function get_activities(): array {
-        return $this->activityplugins->get_all();
+        return $this->contentitemmng->get_all();
     }
 }

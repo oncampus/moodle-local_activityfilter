@@ -18,11 +18,9 @@ namespace local_activityfilter;
 
 use advanced_testcase;
 use core\di;
-use local_activityfilter\activity_searcher\activity_data;
-use local_activityfilter\activity_searcher\ai_searcher;
+use local_activityfilter\activity_searcher\contracts\content_item_info;
 use local_activityfilter\activity_searcher\contracts\activity_ranking;
 use local_activityfilter\activity_searcher\contracts\i_activity_searcher;
-use local_activityfilter\activity_searcher\i_text_compressor;
 
 defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/content_item_generator.php');
@@ -81,7 +79,7 @@ final class ai_searcher_test extends advanced_testcase {
     public function test_convert_ai_response_to_json(string $jsontext, array|false $expectedjsonobject): void {
         $aisearcher = di::get(i_activity_searcher::class);
 
-        $jsonobject = $aisearcher->convert_ai_response_to_json($jsontext);
+        $jsonobject = $aisearcher->convert_ai_response_from_json($jsontext);
 
         $this->assertEquals($expectedjsonobject, $jsonobject);
     }
@@ -123,11 +121,11 @@ final class ai_searcher_test extends advanced_testcase {
     public function test_convert_json_to_ranking(mixed $jsonobject, array $expectedrankings): void {
         $aisearcher = di::get(i_activity_searcher::class);
         $activitydata = [
-            new activity_data(content_item_generator::generate_content_item('kekse', ['help' => 'Hilfe'])),
-            new activity_data(content_item_generator::generate_content_item('leber', ['help' => 'Hilfe2'])),
+            new content_item_info(content_item_generator::generate_content_item('kekse', ['help' => 'Hilfe'])),
+            new content_item_info(content_item_generator::generate_content_item('leber', ['help' => 'Hilfe2'])),
         ];
 
-        $rankings = $aisearcher->convert_json_to_ranking($jsonobject, $activitydata);
+        $rankings = $aisearcher->convert_data_to_ranking($jsonobject, $activitydata);
 
         $this->assertEquals($expectedrankings, $rankings);
     }

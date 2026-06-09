@@ -25,10 +25,11 @@ namespace local_activityfilter\activity_searcher\contracts;
  */
 interface i_activity_searcher {
     /**
-     * Gives the user a ranking list back, based on its request
+     * Gives the user a ranking list back, based on its request.
      *
-     * @param string $request User request
-     * @return activity_ranking[] List of activity rankings
+     * @param string $request User request.
+     * @param int $contextid The context ID for the AI request.
+     * @return activity_ranking[] List of activity rankings.
      */
-    public function filter_activities(string $request): array;
+    public function filter_activities(string $request, int $contextid = 0): array;
 }

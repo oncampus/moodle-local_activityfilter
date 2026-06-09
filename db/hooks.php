@@ -37,4 +37,8 @@ $callbacks = [
         'hook' => before_html_attributes::class,
         'callback' => [hook_callbacks::class, 'before_html_attributes'],
     ],
+    [
+        'hook' => \local_ai_manager\hook\purpose_usage::class,
+        'callback' => [hook_callbacks::class, 'handle_purpose_usage'],
+    ],
 ];

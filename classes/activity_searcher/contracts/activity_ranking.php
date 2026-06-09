@@ -70,6 +70,24 @@ class activity_ranking {
         $this->logohtml = $logohtml;
     }
 
+    public static function create(
+        string $pluginname,
+        string $reason,
+        string $hint,
+        int $ranking,
+        content_item_info $activity
+    ): activity_ranking {
+        return activity_ranking::from_stdclass((object)[
+            'pluginname' => $pluginname,
+            'reason' => $reason,
+            'hint' => $hint,
+            'ranking' => $ranking,
+            'occurrences' => $activity->get_usage_amount(),
+            'title' => $activity->get_title(),
+            'logohtml' => $activity->get_logo_html(),
+        ]);
+    }
+
     /**
      * Converts an stdClass to this data class
      *
