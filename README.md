@@ -2,6 +2,8 @@
 **Activity Filter** is a local plugin for Moodle that is intended to help you find suitable activities.
 With the help of the AI subsystem, user requests are processed and suitable activities are identified.
 
+[![MDL Shield](https://img.shields.io/endpoint?url=https%3A%2F%2Fmdlshield.com%2Fapi%2Fbadge%2Flocal_activityfilter)](https://mdlshield.com/plugins/local_activityfilter)
+
 ## Features
 Suggest activities for specific tasks
 - Adjustable system and plugin prompt
