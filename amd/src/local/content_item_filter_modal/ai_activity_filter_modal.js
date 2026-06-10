@@ -82,7 +82,8 @@ export default class AIActivityFilterModal {
 
             this.resultArea.innerHTML = `
                 <div class="alert alert-danger">
-                    ${errorText} - ${response.error}
+                    <p>${errorText}</p>
+                    <p>${response.error}</p>
                 </div>
             `;
 

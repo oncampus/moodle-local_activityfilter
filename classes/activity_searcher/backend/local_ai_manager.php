@@ -16,13 +16,11 @@
 
 namespace local_activityfilter\activity_searcher\backend;
 
-use core\context;
 use core\di;
 use core\exception\moodle_exception;
+use Exception;
 use local_ai_manager\local\tenant;
-use local_ai_manager\local\userinfo;
 use local_ai_manager\manager;
-use moodle_url;
 
 /**
  * Mebis AI System
@@ -69,13 +67,7 @@ class local_ai_manager implements ai_backend {
         $manager = new manager('singleprompt');
         $response = $manager->perform_request($prompttext, 'local_activityfilter', $contextid);
         if ($response->get_code() !== 200) {
-            throw new moodle_exception(
-                'error:ai_call',
-                'local_activityfilter',
-                '',
-                $response->get_errormessage(),
-                $response->get_debuginfo()
-            );
+            throw new Exception($response->get_errormessage());
         }
         // The ai_manager may wrap content in HTML tags (e.g. <p>...</p>), strip them for raw JSON.
         return trim(strip_tags($response->get_content()));

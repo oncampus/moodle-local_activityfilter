@@ -42,7 +42,7 @@ interface ai_backend {
      * @param string $prompttext Prompt (User + Systemprompt)
      * @param int $contextid Context, where AI is called
      * @return string Response of the AI
-     * @throws moodle_exception|Exception AI Call failed
+     * @throws Exception AI Call failed
      */
     public function send_request(string $prompttext, int $contextid): string;
 }
