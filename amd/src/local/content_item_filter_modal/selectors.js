@@ -14,12 +14,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 const Selectors = {
-    searchButton: '[data-action="activityfilter-search"]',
-    resultArea: '[data-region="activityfilter-results"]',
-    searchPrompt: '#activitysearchprompt',
+    INPUTS: {
+        SEARCH_PROMPT: '#activitysearchprompt',
+    },
+    OUTPUTS: {
+        LOADING_SPINNER: '.spinner-border',
+        AI_RESULTS: '[data-region="activityfilter-results"]',
+    },
     newContentDropdown: ".course-content .course-section .divider .dropdown-menu",
     SearchIcon: '.icon',
-    LoadingSpinner: '.spinner-border',
+    ACTIONS: {
+        SEARCH: '[data-action="activityfilter-search"]',
+        ACCEPT: '.ai-policy-block [data-action="accept"]',
+    }
 };
 
 export default Selectors;

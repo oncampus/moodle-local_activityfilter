@@ -71,8 +71,8 @@ export default class ContentItemRanking {
             hint: this.hint,
             ranking: rankFix,
             reason: this.reason,
-            occurrences: await this.#getOccurranceString(maxOccurrences),
-            stars: this.#convertRankingStars(rankFix),
+            occurrences: await this.getOccurranceString(maxOccurrences),
+            stars: this.convertRankingStars(rankFix),
             activityicon: this.logohtml,
         };
     }
@@ -83,7 +83,7 @@ export default class ContentItemRanking {
      * @param {number} maxOccurrence Occurrence of most used plugin
      * @returns {Promise<string>} Language string, how often this activity occurs in the moodle
      */
-    async #getOccurranceString(maxOccurrence) {
+    async getOccurranceString(maxOccurrence) {
         maxOccurrence = Math.max(maxOccurrence, 1);
         const frequencyRanking = Math.floor(this.occurrences * 5 / maxOccurrence);
 
@@ -105,7 +105,7 @@ export default class ContentItemRanking {
      * @param {number} ranking Rating from 0 to 10
      * @return {string[]} UI Data for star rating
      */
-    #convertRankingStars(ranking) {
+    convertRankingStars(ranking) {
         let staricons = [];
         let stars = Math.floor(ranking / 2);
 

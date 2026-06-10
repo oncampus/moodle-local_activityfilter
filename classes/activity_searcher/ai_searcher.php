@@ -20,7 +20,6 @@ use context_system;
 use core\exception\moodle_exception;
 use dml_exception;
 use local_activityfilter\activity_searcher\backend\ai_backend;
-use local_activityfilter\activity_searcher\contracts\content_item_info;
 use local_activityfilter\activity_searcher\contracts\activity_ranking;
 use local_activityfilter\activity_searcher\contracts\i_activity_searcher;
 
@@ -83,14 +82,16 @@ class ai_searcher implements i_activity_searcher {
      */
     public function build_prompt_text(string $userrequest): string {
         $contentiteminfos = $this->summerizer->get_content_item_infos();
-        $contentiteminfos = json_encode($contentiteminfos, JSON_UNESCAPED_UNICODE);
-        $contentiteminfos = preg_replace('/<[^>]*>/', '', $contentiteminfos);
-        $contentiteminfos = str_replace("\/innen", "", $contentiteminfos);
-        $contentiteminfos = str_replace("\/", "/", $contentiteminfos);
-        $contentiteminfos = str_replace('},{', "\n", $contentiteminfos);
+        $cleaned = array_map(function ($item) {
+            $entry = $item->jsonSerialize();
+            $entry['help'] = strip_tags($entry['help']);
+            $entry['help'] = str_replace('/innen', '', $entry['help']);
+            return $entry;
+        }, $contentiteminfos);
+        $plugindescription = json_encode($cleaned, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
         return get_config('local_activityfilter', 'systemprompt') .
-            'Plugin descriptions ' . $contentiteminfos . "\n" .
+            'Plugin descriptions ' . $plugindescription . "\n" .
             'User request: ' . $this->compressor->compress($userrequest);
     }
 

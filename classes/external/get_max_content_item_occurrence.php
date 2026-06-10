@@ -49,15 +49,16 @@ class get_max_content_item_occurrence extends external_api {
 
         $db = di::get(moodle_database::class);
         $record = $db->get_record_sql(
-            'SELECT COUNT(*) AS count
-                FROM {course_modules} cm
-                JOIN {modules} m ON m.id = cm.module
-                GROUP BY m.name
-                ORDER BY COUNT(*) DESC',
-            strictness: IGNORE_MULTIPLE
+            'SELECT MAX(module_count_table.mc) AS maxcount
+                 FROM (
+                    SELECT COUNT(*) AS mc
+                    FROM {course_modules} cm
+                    JOIN {modules} m ON m.id = cm.module
+                    GROUP BY m.name
+                ) module_count_table'
         );
 
-        return $record ? $record->count : 0;
+        return $record ? $record->maxcount : 0;
     }
 
     /**

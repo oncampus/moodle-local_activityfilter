@@ -16,6 +16,7 @@
 
 namespace local_activityfilter\local;
 
+use context_course;
 use core\di;
 use core\hook\output\before_html_attributes;
 use core\hook\di_configuration;
@@ -103,11 +104,16 @@ class hook_callbacks {
      * @return void
      */
     public static function before_html_attributes(before_html_attributes $hook): void {
-        if (!di::get(ai_backend::class)->available()) {
+        global $PAGE;
+        if (!$PAGE->context instanceof context_course) {
             return;
         }
 
-        global $PAGE;
+        $aibackend = di::get(ai_backend::class);
+        if (!$aibackend->available()) {
+            return;
+        }
+
         if (
             !has_all_capabilities([
                 'local/activityfilter:filter_activities',
@@ -123,7 +129,10 @@ class hook_callbacks {
         );
         $PAGE->requires->js_call_amd(
             'local_activityfilter/content_item_filter_modal',
-            'init'
+            'init',
+            [
+                'checkCorePolicy' => $aibackend instanceof core_ai,
+            ]
         );
     }
 

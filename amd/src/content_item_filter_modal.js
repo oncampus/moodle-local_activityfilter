@@ -13,120 +13,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-import ContentItemRankingList from "./local/content_item_filter_modal/content_item_ranking_list";
 import Selectors from "./local/content_item_filter_modal/selectors";
 import {
-    fetchContentItemsRanking,
     getLanguageString,
     LanguageStrings,
-    renderContentItemModal
 } from './local/content_item_filter_modal/repository';
-import Modal from 'core/modal';
+import AIActivityFilterModal from "./local/content_item_filter_modal/ai_activity_filter_modal";
+import PolicyPlacement from './local/content_item_filter_modal/policy_placement';
 
 /**
- * Get user input in search prompt
+ * Initializes the activity filter in the activity add menu.
  *
- * @param {Element} modalRoot Root of modal
- * @returns {string} Search prompt input
- */
-function getSearchPrompt(modalRoot) {
-    const searchPrompt = modalRoot.querySelector(Selectors.searchPrompt);
-    if (!searchPrompt) {
-        window.console.log(`Search prompt ${Selectors.searchPrompt} not found`);
-        return '';
-    }
-    return (searchPrompt.value || '').trim();
-}
-
-/**
- *
- * @param {Element} modalRoot
+ * @param {boolean} checkCorePolicy Whether to check the core usage policy
  * @returns {Promise<void>}
  */
-async function search(modalRoot) {
-    const results = modalRoot.querySelector(Selectors.resultArea);
-    if (!results) {
-        window.console.error(`Result area ${Selectors.resultArea} could not be found.`);
-        return;
-    }
-
-    const prompt = getSearchPrompt(modalRoot);
-    const response = await fetchContentItemsRanking(prompt);
-    if (!response.ok) {
-        window.console.error("Error while fetching content items rankings", response.error);
-        const errorText = await getLanguageString(LanguageStrings.ErrorAICall);
-        results.innerHTML = `
-        <div class="alert alert-danger">
-            ${errorText}
-        </div>`;
-        return;
-    }
-
-    const rankingList = ContentItemRankingList.createFromRaw(response.data);
-    await rankingList.render(results);
-}
-
-/**
- * Sets the button to loading / ready
- *
- * @param {HTMLElement} button Prompt submit button
- * @param {boolean} loading Set to loading / ready
- */
-function setLoading(button, loading) {
-    const label = button.querySelector(Selectors.SearchIcon);
-    const spinner = button.querySelector(Selectors.LoadingSpinner);
-
-    button.disabled = loading;
-    button.classList.toggle('disabled', loading);
-    label.classList.toggle('d-none', loading);
-    spinner.classList.toggle('d-none', !loading);
-}
-
-/**
- * Opens the activity filter module
- *
- * @returns {Promise<void>}
- */
-async function openActivityFilter() {
-    const modal = await Modal.create({
-        title: getLanguageString(LanguageStrings.ModalHeader),
-        body: await renderContentItemModal(),
-        footer: '',
-    });
-    await modal.show();
-
-    const modalRoot = modal.getRoot()[0];
-    const searchButton = modalRoot.querySelector(Selectors.searchButton);
-    if (!searchButton) {
-        window.console.error(`Search button ${Selectors.searchButton} not found`);
-        return;
-    }
-
-    const doSearch = async() => {
-        setLoading(searchButton, true);
-        await search(modalRoot);
-        setLoading(searchButton, false);
-    };
-
-    searchButton.addEventListener('click', doSearch);
-
-    const searchPrompt = modalRoot.querySelector(Selectors.searchPrompt);
-    if (searchPrompt) {
-        searchPrompt.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                doSearch();
-            }
-        });
-    }
-}
-
-/**
- * Initializes the activity filter in the activity add menu
- *
- * @returns {Promise<void>}
- */
-export async function init() {
+export async function init(checkCorePolicy) {
     const newContentDropdowns = document.querySelectorAll(Selectors.newContentDropdown);
     let openButtonText = await getLanguageString(LanguageStrings.OpenButtonText);
 
@@ -140,7 +41,17 @@ export async function init() {
         button.classList.add('dropdown-item', 'open-activityfilter');
         button.append(icon);
         button.append(text);
-        button.addEventListener('click', openActivityFilter);
+        button.addEventListener('click', async() => {
+            if (checkCorePolicy) {
+                const policy = new PolicyPlacement();
+                if (!await policy.isPolicyAccepted()) {
+                    await policy.displayPolicy(AIActivityFilterModal.create);
+                    return;
+                }
+            }
+
+            await AIActivityFilterModal.create();
+        });
 
         if (newContentDropdown.children.length >= 1) {
             newContentDropdown.insertBefore(button, newContentDropdown.children[1]);

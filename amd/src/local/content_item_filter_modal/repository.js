@@ -42,7 +42,7 @@ const success = (data) => ({
 const failure = (error) => ({
     ok: false,
     data: null,
-    error: error?.message ?? error,
+    error: error && error.message ? error.message : '',
 });
 
 /**

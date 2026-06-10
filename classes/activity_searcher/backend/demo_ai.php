@@ -16,6 +16,9 @@
 
 namespace local_activityfilter\activity_searcher\backend;
 
+use moodle_url;
+use core\context;
+
 /**
  * Dummy, that always returns the same answer
  *

@@ -16,9 +16,12 @@
 
 namespace local_activityfilter\activity_searcher\backend;
 
+use core\context;
 use core_ai\aiactions\generate_text;
+use core_privacy\local\sitepolicy\manager as policy_manager;
 use core_ai\manager;
 use Exception;
+use moodle_url;
 
 /**
  * Moodle core AI subsystem
