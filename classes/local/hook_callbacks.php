@@ -131,7 +131,7 @@ class hook_callbacks {
             'local_activityfilter/content_item_filter_modal',
             'init',
             [
-                'check_core_policy' => $aibackend instanceof core_ai,
+                'checkCorePolicy' => $aibackend instanceof core_ai,
             ]
         );
     }

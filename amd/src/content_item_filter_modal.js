@@ -24,10 +24,10 @@ import PolicyPlacement from './local/content_item_filter_modal/policy_placement'
 /**
  * Initializes the activity filter in the activity add menu.
  *
- * @param {boolean} check_core_policy Whether to check the core usage policy
+ * @param {boolean} checkCorePolicy Whether to check the core usage policy
  * @returns {Promise<void>}
  */
-export async function init(check_core_policy) {
+export async function init(checkCorePolicy) {
     const newContentDropdowns = document.querySelectorAll(Selectors.newContentDropdown);
     let openButtonText = await getLanguageString(LanguageStrings.OpenButtonText);
 
@@ -41,8 +41,8 @@ export async function init(check_core_policy) {
         button.classList.add('dropdown-item', 'open-activityfilter');
         button.append(icon);
         button.append(text);
-        button.addEventListener('click', async () => {
-            if (check_core_policy) {
+        button.addEventListener('click', async() => {
+            if (checkCorePolicy) {
                 const policy = new PolicyPlacement();
                 if (!await policy.isPolicyAccepted()) {
                     await policy.displayPolicy(AIActivityFilterModal.create);

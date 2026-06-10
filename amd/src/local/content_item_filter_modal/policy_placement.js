@@ -22,7 +22,6 @@
  */
 
 import Templates from 'core/templates';
-import Notification from 'core/notification';
 import Policy from 'core_ai/policy';
 import Selectors from './selectors';
 import Modal from 'core/modal';
@@ -66,14 +65,10 @@ export default class PolicyPlacement {
         });
         modal.removeOnClose = true;
 
-        Templates.render('core_ai/policyblock', {})
-            .then((html) => {
-                modal.getRoot()[0].innerHTML = html;
-                this.registerPolicyEventListeners(openAIModal);
-            })
-            .catch(Notification.exception);
-
+        const result = await Templates.renderForPromise('core_ai/policyblock', {});
+        Templates.replaceNodeContents(modal.getRoot()[0], result.html, result.js);
         await modal.show();
+        this.registerPolicyEventListeners(openAIModal);
     }
 
     /**
@@ -86,8 +81,11 @@ export default class PolicyPlacement {
 
         if (acceptAction) {
             acceptAction.addEventListener('click', () => {
+                this.acceptPolicy();
                 openAIModal();
             });
+        } else {
+            window.console.error('Accept button could not be found.');
         }
     }
 }
