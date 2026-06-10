@@ -16,6 +16,8 @@
 
 namespace local_activityfilter\activity_searcher\backend;
 
+use core\context;
+use moodle_url;
 use RuntimeException;
 
 /**

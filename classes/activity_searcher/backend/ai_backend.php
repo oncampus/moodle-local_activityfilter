@@ -16,8 +16,10 @@
 
 namespace local_activityfilter\activity_searcher\backend;
 
+use context;
 use core\exception\moodle_exception;
 use Exception;
+use moodle_url;
 
 /**
  * AI Backend for activity_searcher plugin

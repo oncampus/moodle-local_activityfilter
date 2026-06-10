@@ -23,7 +23,7 @@ use voku\helper\StopWordsLanguageNotExists;
 
 defined('MOODLE_INTERNAL') || die();
 
-require(__DIR__ . '/../../vendor/autoload.php');
+require_once(__DIR__ . '/../../vendor/autoload.php');
 
 /**
  * Text compressor using stopword library.

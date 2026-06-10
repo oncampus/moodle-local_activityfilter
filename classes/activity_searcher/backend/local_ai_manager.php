@@ -16,10 +16,13 @@
 
 namespace local_activityfilter\activity_searcher\backend;
 
+use core\context;
 use core\di;
 use core\exception\moodle_exception;
 use local_ai_manager\local\tenant;
+use local_ai_manager\local\userinfo;
 use local_ai_manager\manager;
+use moodle_url;
 
 /**
  * Mebis AI System
