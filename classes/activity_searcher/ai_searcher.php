@@ -70,6 +70,9 @@ class ai_searcher implements i_activity_searcher {
             throw new invalid_ai_response("Invalid AI feedback: " . $response);
         }
 
+        usort($ratings, function (activity_ranking $a, activity_ranking $b): int {
+            return $b->ranking <=> $a->ranking;
+        });
         return $ratings;
     }
 
