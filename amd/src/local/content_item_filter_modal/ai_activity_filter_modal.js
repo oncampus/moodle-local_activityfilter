@@ -3,6 +3,7 @@ import {
     fetchContentItemsRanking,
     getLanguageString,
     LanguageStrings,
+    renderAIError,
     renderContentItemModal,
 } from "./repository";
 import ContentItemRankingList from "./content_item_ranking_list";
@@ -76,17 +77,8 @@ export default class AIActivityFilterModal {
         const response = await fetchContentItemsRanking(prompt);
 
         if (!response.ok) {
-            window.console.error("Error while fetching content items rankings", response.error);
-
-            const errorText = await getLanguageString(LanguageStrings.ErrorAICall);
-
-            this.resultArea.innerHTML = `
-                <div class="alert alert-danger">
-                    <p>${errorText}</p>
-                    <p>${response.error}</p>
-                </div>
-            `;
-
+            window.console.error("Error while fetching content items rankings", response);
+            await renderAIError(this.resultArea, response.error);
             return;
         }
 
