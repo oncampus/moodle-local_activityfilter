@@ -20,7 +20,6 @@ import Templates from 'core/templates';
 export const LanguageStrings = {
     ModalHeader: 'modal_title',
     OpenButtonText: 'open_activityfilter',
-    ErrorAICall: 'error:ai_call',
     OccurrenceVeryRare: 'occurences:very_rare',
     OccurrenceRare: 'occurences:rare',
     OccurrenceModerately: 'occurences:moderately',
@@ -46,6 +45,29 @@ const failure = (error) => ({
 });
 
 /**
+ * Sanitize a prompt string before sending it to the server.
+ *
+ * Trims whitespace, collapses repeated whitespace/newlines into single
+ * spaces, and strips control characters that could cause PARAM_TEXT
+ * validation to fail.
+ *
+ * @param {string} text The raw input text.
+ * @returns {string} The sanitized text.
+ */
+function sanitizePrompt(text) {
+    if (typeof text !== 'string') {
+        return '';
+    }
+
+    return text
+        // Strip HTML tags.
+        .replace(/<[^>]*>/g, '')
+        // Collapse all whitespace (including newlines/tabs) into single spaces.
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+/**
  * Calls content item ranking by ajax
  *
  * @param {string} prompt User prompt
@@ -57,7 +79,7 @@ export async function fetchContentItemsRanking(prompt) {
     try {
         const result = await fetchMany([{
             methodname: 'local_activityfilter_filter_activities',
-            args: {courseid: courseId, prompt: prompt}
+            args: {courseid: courseId, prompt: sanitizePrompt(prompt)}
         }])[0];
         return success(result);
     } catch (error) {
@@ -84,11 +106,32 @@ export async function fetchMaxContentItemOccurrence() {
     }
 }
 
-export const renderContentItemModal = () =>
-    Templates.render(
+/**
+ * Render the activity filter modal content.
+ *
+ * @returns {Promise<string>} The rendered HTML for the activity filter modal.
+ */
+export function renderContentItemModal() {
+    return Templates.render(
         'local_activityfilter/activityfilter_modal',
         []
     );
+}
+
+/**
+ * Renders an error into the element
+ *
+ * @param {HTMLElement} targetElement Target
+ * @param {string} errorMessage Message of the error
+ * @returns {Promise<void>}
+ */
+export async function renderAIError(targetElement, errorMessage) {
+    const result = await Templates.renderForPromise(
+        'local_activityfilter/ai_response_error',
+        {'error_msg': errorMessage}
+    );
+    Templates.replaceNodeContents(targetElement, result.html, result.js);
+}
 
 /**
  * Renders the content item ranking in body of this element
