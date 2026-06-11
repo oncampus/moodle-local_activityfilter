@@ -103,8 +103,8 @@ class ai_searcher implements i_activity_searcher {
      */
     public function convert_ai_response_from_json(string $jsontext): array|false {
         $directdecode = json_decode($jsontext, true);
-        if (json_last_error() == JSON_ERROR_NONE) {
-            return $directdecode;
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return is_array($directdecode) ? $directdecode : false;
         }
 
         // phpcs:ignore moodle.Strings.ForbiddenStrings.Found -- Parse Markdown JSON code fences from AI responses.
